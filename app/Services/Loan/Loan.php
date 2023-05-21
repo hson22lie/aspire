@@ -38,8 +38,10 @@ class Loan implements LoanInterface
     public function detail(int $loanID, User $user): LoanModel
     {
         $loan = $this->loanRepo->detail($loanID);
-        if ($loan->user_id != $user->id || $user->role != USer::ROLE_ADMIN) {
-            throw new Exception("you can't access this api", 403);
+        if ($loan->user_id != $user->id) {
+            if ($user->role != USer::ROLE_ADMIN) {
+                throw new Exception("you can't access this api", 403);
+            }
         }
         return $loan;
     }
