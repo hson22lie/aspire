@@ -59,6 +59,5 @@ class LoanController extends Controller
         } catch (Exception $e) {
             return $this->failedResponse($e);
         }
-
     }
 }

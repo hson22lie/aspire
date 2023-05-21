@@ -58,6 +58,11 @@ class Loan implements LoanInterface
         if ($loan->status != LoanModel::PENDING) {
             throw new Exception("loan status is not on pending", 422);
         }
+        if ($loanApprovalRequest->status == LoanModel::REJECTED) {
+            $this->rejectLoan($loan, $loanApprovalRequest->admin_id);
+            DB::commit();
+            return;
+        }
         $loan->approved_by = $loanApprovalRequest->admin_id;
         $loan->status = $loanApprovalRequest->get('status');
         $loan->disbursed_at = $loanApprovalRequest->get('payment_date');
@@ -66,6 +71,12 @@ class Loan implements LoanInterface
         DB::commit();
     }
 
+    private function rejectLoan(LoanModel $loan, int $adminID)
+    {
+        $loan->approved_by = $adminID;
+        $loan->status = LoanModel::REJECTED;
+        $loan->save();
+    }
     private function createDetails(LoanModel $loan)
     {
         $installments = $this->prepareInstallmentAmount($loan->loan_amount, $loan->term);

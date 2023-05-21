@@ -33,9 +33,9 @@ class UserRepoTest extends TestCase
     public function testFindUser()
     {
         $userRepo =  new UserRepository();
-        $result = $userRepo->findByEmail("tester");
+        $result = $userRepo->findByEmail("admin@aspire.com");
         $this->assertIsNumeric($result->id);
-        $this->assertEquals("tester", $result->email);
+        $this->assertEquals("admin@aspire.com", $result->email);
         $this->assertInstanceOf(User::class, $result);
     }
 }
