@@ -28,3 +28,8 @@ Route::group(['prefix' => 'loan', 'middleware'  => ['user']], function () {
     Route::post('/', [LoanController::class, 'create']);
     Route::get('/{loanID}', [LoanController::class, 'detail']);
 });
+
+Route::group(['prefix' => 'loan', 'middleware'  => ['admin']], function () {
+    Route::get('/', [LoanController::class, 'get']);
+    Route::patch('/{loanID}/approval', [LoanController::class, 'updateLoanApproval']);
+});

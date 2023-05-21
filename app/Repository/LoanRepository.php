@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class LoanRepository implements LoanRepoInterface
 {
@@ -17,7 +18,6 @@ class LoanRepository implements LoanRepoInterface
         $loan->loan_amount = $loanRequest->amount;
         $loan->user_id = $loanRequest->user_id;
         $loan->created_by = $loanRequest->user_id;
-        $loan->paid_at = $loanRequest->paid_at;
         $loan->save();
         return $loan;
     }
@@ -49,5 +49,15 @@ class LoanRepository implements LoanRepoInterface
     public function getTransactionByUserID(int $userID): LengthAwarePaginator
     {
         return Loan::where('user_id', $userID)->paginate(10);
+    }
+
+    public function findLoanByID(int $loanID): ?Loan
+    {
+        return Loan::where('id', $loanID)->first();
+    }
+
+    public function findLoanDetailByID(int $loanID): ?Collection
+    {
+        return LoanDetail::where('loan_id', $loanID)->get();
     }
 }

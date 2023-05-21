@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoanRequest extends FormRequest
+class LoanApprovalRequest extends FormRequest
 {
-    public int $user_id;
+    public int $admin_id;
+    public int $loan_id;
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response([
@@ -35,18 +36,14 @@ class LoanRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => 'required',
-            'term' => 'required|min:1',
+            'status' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'amount.required' => 'please put amount',
-            'amount.min' => 'min amount is 1',
-            'term.required' => 'please put required',
-            'term.min' => 'please put min 1',
+            'status.required' => 'please put status approved / rejected',
         ];
     }
 }

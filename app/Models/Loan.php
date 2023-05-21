@@ -9,6 +9,10 @@ class Loan extends Model
 {
     use HasFactory;
 
+    public const PENDING = "pending";
+    public const APPROVED = "approved";
+    public const REJECTED = "rejected";
+
     protected $fillable     = [
         'user_id',
         'loan_amount',
@@ -16,6 +20,7 @@ class Loan extends Model
         'status',
         'approved_by',
         'approved_at',
+        'disbursed_at',
         'paid_at',
         'created_at',
         'created_by',

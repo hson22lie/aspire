@@ -22,7 +22,6 @@ class Controller extends BaseController
 
     protected function failedResponse(\Exception $e)
     {
-        dd($e->getMessage(), $e->getFile(), $e->getLine());
         $message = $e->getMessage();
         $code = ($e->getCode()) ? $e->getCode() : 500;
         return response()->json([

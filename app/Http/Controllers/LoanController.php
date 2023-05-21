@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoanApprovalRequest;
 use App\Http\Requests\LoanRequest;
 use App\Services\Loan\LoanInterface;
 use Exception;
@@ -45,5 +46,19 @@ class LoanController extends Controller
         } catch (Exception $e) {
             return $this->failedResponse($e);
         }
+    }
+
+    public function updateLoanApproval($loanID, LoanApprovalRequest $loanApprovalRequest)
+    {
+        try {
+            $loanApprovalRequest->admin_id = auth('api')->user()->id;
+            $loanApprovalRequest->loan_id = $loanID;
+            $this->loanService->update($loanApprovalRequest);
+            $msg = sprintf("success patch loan ID : %d", $loanID);
+            return $this->successResponse($msg);
+        } catch (Exception $e) {
+            return $this->failedResponse($e);
+        }
+
     }
 }

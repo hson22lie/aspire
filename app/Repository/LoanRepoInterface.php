@@ -6,6 +6,7 @@ use App\Http\Requests\LoanRequest;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 interface LoanRepoInterface
 {
@@ -15,4 +16,6 @@ interface LoanRepoInterface
     public function createDetail(mixed $loanDetail): LoanDetail;
     public function getAllTransaction(): LengthAwarePaginator;
     public function getTransactionByUserID(int $userID): LengthAwarePaginator;
+    public function findLoanByID(int $loanID): ?Loan;
+    public function findLoanDetailByID(int $loanID): ?Collection;
 }

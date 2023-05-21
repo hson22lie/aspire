@@ -18,9 +18,10 @@ return new class extends Migration
             $table->integer('user_id');
             $table->float('loan_amount');
             $table->tinyInteger('term');
-            $table->enum('status', ['pending','approved','paid'])->default('pending');
+            $table->enum('status', ['pending','approved','paid',"rejected"])->default('pending');
             $table->integer('approved_by')->nullable();
             $table->dateTime('approved_at')->nullable();
+            $table->dateTime('disbursed_at')->nullable();
             $table->dateTime('paid_at')->nullable();
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();

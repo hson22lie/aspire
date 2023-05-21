@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,10 +19,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->header('x-api-key') != "xyz") {
-            throw new UnauthorizedException("you dont have access to this api");
+        $user = auth('api')->user();
+        if (empty($user) || $user->role != User::ROLE_ADMIN) {
+            throw new UnauthorizedException("you dont have access");
         }
-
         return $next($request);
     }
 }
