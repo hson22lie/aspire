@@ -19,4 +19,9 @@ class AuthController extends Controller
         $user = $this->authInterface->generateToken($request->get('email'));
         return ['token' => $user];
     }
+
+    public function loginAdmin(Request $request): array
+    {
+        return ['token' => $this->authInterface->validateAdmin($request->all())];
+    }
 }
