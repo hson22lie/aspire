@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('loan_id');
             $table->float('installment_amount');
+            $table->float('paid_amount')->nullable();
             $table->enum('status', ['pending','approved','paid'])->default('pending');
             $table->dateTime('overdue_at')->nullable();
             $table->dateTime('paid_at')->nullable();

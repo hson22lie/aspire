@@ -18,15 +18,16 @@ class TestDataSeeder extends Seeder
     {
         // create user;
         DB::table('users')->insert([
-            'name' => "tester",
-            'email' => "tester",
-            'role' => 'user',
-        ]);
-        DB::table('users')->insert([
             'name' => "admin",
             'email' => "admin@aspire.com",
             'role' => 'admin',
             'password' => Hash::make('password'),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => "tester",
+            'email' => "tester",
+            'role' => 'user',
         ]);
 
         DB::table('loans')->insert([

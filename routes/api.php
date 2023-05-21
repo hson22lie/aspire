@@ -27,9 +27,10 @@ Route::group(['prefix' => 'loan', 'middleware'  => ['user']], function () {
     Route::get('/', [LoanController::class, 'get']);
     Route::post('/', [LoanController::class, 'create']);
     Route::get('/{loanID}', [LoanController::class, 'detail']);
+    Route::patch('/{loanID}/repayment', [LoanController::class, 'repayment']);
 });
 
-Route::group(['prefix' => 'loan', 'middleware'  => ['admin']], function () {
+Route::group(['prefix' => 'admin/loan', 'middleware'  => ['admin']], function () {
     Route::get('/', [LoanController::class, 'get']);
     Route::patch('/{loanID}/approval', [LoanController::class, 'updateLoanApproval']);
 });

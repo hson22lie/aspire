@@ -21,7 +21,10 @@ class AdminMiddleware
     {
         $user = auth('api')->user();
         if (empty($user) || $user->role != User::ROLE_ADMIN) {
-            throw new UnauthorizedException("you dont have access");
+            return response()->json([
+                'status' => 'failed',
+                'message' => "you don't have access",
+            ], 401);
         }
         return $next($request);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoanApprovalRequest;
+use App\Http\Requests\LoanRepaymentRequest;
 use App\Http\Requests\LoanRequest;
 use App\Services\Loan\LoanInterface;
 use Exception;
@@ -59,5 +60,18 @@ class LoanController extends Controller
         } catch (Exception $e) {
             return $this->failedResponse($e);
         }
+    }
+
+    public function repayment($loanID, LoanRepaymentRequest $loanRepaymentRequest)
+    {
+        try {
+            $loanRepaymentRequest->user_id = auth('api')->user()->id;
+            $loanRepaymentRequest->loan_id = $loanID;
+            $this->loanService->repayment($loanRepaymentRequest);
+            return $this->successResponse("success do repayment");
+        } catch (Exception $e) {
+            return $this->failedResponse($e);
+        }
+
     }
 }

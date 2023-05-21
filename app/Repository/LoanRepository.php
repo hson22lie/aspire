@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class LoanRepository implements LoanRepoInterface
 {
-    public function create(LoanRequest $loanRequest): Loan
+    public function create(LoanRequest $loanRequest): ?Loan
     {
         $loan = new Loan();
         $loan->term = $loanRequest->term;
@@ -22,7 +22,7 @@ class LoanRepository implements LoanRepoInterface
         return $loan;
     }
 
-    public function detail(int $loanID): Loan
+    public function detail(int $loanID): ?Loan
     {
         return Loan::where('id', $loanID)->with('detail')->first();
     }
@@ -33,7 +33,7 @@ class LoanRepository implements LoanRepoInterface
         return boolval($loan);
     }
 
-    public function createDetail(mixed $loanDetail): LoanDetail
+    public function createDetail(mixed $loanDetail): ?LoanDetail
     {
         $detail = new LoanDetail();
         $detail->loan_id = $loanDetail['id'];
@@ -59,5 +59,9 @@ class LoanRepository implements LoanRepoInterface
     public function findLoanDetailByID(int $loanID): ?Collection
     {
         return LoanDetail::where('loan_id', $loanID)->get();
+    }
+    public function findUnpaidDetailByLoanID(int $loanID): ?LoanDetail
+    {
+        return LoanDetail::where('loan_id', $loanID)->where('status', Loan::PENDING)->orderBy('id', 'ASC')->first();
     }
 }

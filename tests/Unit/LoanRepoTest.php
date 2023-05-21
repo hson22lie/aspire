@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Requests\LoanRequest;
+use App\Models\LoanDetail;
 use App\Repository\LoanRepoInterface;
 use App\Repository\LoanRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -97,5 +98,12 @@ class LoanRepoTest extends TestCase
         $orderID = 1;
         $result = $this->loanRepo->findLoanDetailByID($orderID);
         $this->assertEquals(3, count($result));
+    }
+
+    public function testFindUnpaidDetailByLoanID()
+    {
+        $orderID = 2;
+        $result = $this->loanRepo->findUnpaidDetailByLoanID($orderID);
+        $this->assertInstanceOf(LoanDetail::class, $result);
     }
 }

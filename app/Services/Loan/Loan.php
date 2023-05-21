@@ -3,6 +3,7 @@
 namespace App\Services\Loan;
 
 use App\Http\Requests\LoanApprovalRequest;
+use App\Http\Requests\LoanRepaymentRequest;
 use App\Http\Requests\LoanRequest;
 use App\Repository\LoanRepoInterface;
 use App\Models\Loan as LoanModel;
@@ -69,6 +70,30 @@ class Loan implements LoanInterface
         $loan->save();
         $this->updatePaymentDetailsDueDate($loan->id, $loan->disbursed_at);
         DB::commit();
+    }
+
+    public function repayment(LoanRepaymentRequest $loanRepaymentRequest)
+    {
+        $loan = $this->loanRepo->findLoanByID($loanRepaymentRequest->loan_id);
+        if (
+            $loan->user_id != $loanRepaymentRequest->user_id
+            || in_array($loan->status, [LoanModel::PAID, LoanModel::REJECTED])
+        ) {
+            throw new Exception("loan not found", 404);
+        }
+        $loanDetails = $this->loanRepo->findUnpaidDetailByLoanID($loanRepaymentRequest->loan_id);
+        if ($loanDetails->installment_amount > $loanRepaymentRequest->amount) {
+            throw new Exception("you need to pay :" . $loanDetails->installment_amount . "to finish this payment", 422);
+        }
+        $loanDetails->paid_amount = $loanRepaymentRequest->amount;
+        $loanDetails->paid_at = Carbon::now();
+        $loanDetails->status = LoanModel::PAID;
+        $loanDetails->save();
+        $loanDetails = $this->loanRepo->findUnpaidDetailByLoanID($loanRepaymentRequest->loan_id);
+        if (empty($loanDetails)) {
+            $loan->status = LoanModel::PAID;
+            $loan->save();
+        }
     }
 
     private function rejectLoan(LoanModel $loan, int $adminID)

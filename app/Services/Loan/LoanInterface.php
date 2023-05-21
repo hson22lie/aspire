@@ -3,6 +3,7 @@
 namespace App\Services\Loan;
 
 use App\Http\Requests\LoanApprovalRequest;
+use App\Http\Requests\LoanRepaymentRequest;
 use App\Http\Requests\LoanRequest;
 use App\Models\Loan;
 use App\Models\User;
@@ -14,4 +15,5 @@ interface LoanInterface
     public function detail(int $loanID, User $user): Loan;
     public function get(User $user): LengthAwarePaginator;
     public function update(LoanApprovalRequest $loanApprovalRequest);
+    public function repayment(LoanRepaymentRequest $loanRepaymentRequest);
 }

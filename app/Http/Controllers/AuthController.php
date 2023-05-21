@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\Auth\AuthInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -14,14 +16,26 @@ class AuthController extends Controller
     ) {
         $this->authInterface = $authInterface;
     }
-    public function generateToken(Request $request): array
+
+    public function generateToken(Request $request): JsonResponse
     {
-        $user = $this->authInterface->generateToken($request->get('email'));
-        return ['token' => $user];
+        try {
+            $user = $this->authInterface->generateToken($request->get('email'));
+            return $this->successResponse("success", ['token' => $user]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e);
+        }
     }
 
-    public function loginAdmin(Request $request): array
+    public function loginAdmin(Request $request): JsonResponse
     {
-        return ['token' => $this->authInterface->validateAdmin($request->all())];
+        try {
+            return $this->successResponse(
+                "success",
+                ['token' => $this->authInterface->validateAdmin($request->all())]
+            );
+        } catch (Exception $e) {
+            return $this->failedResponse($e);
+        }
     }
 }

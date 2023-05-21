@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Requests\LoanApprovalRequest;
+use App\Http\Requests\LoanRepaymentRequest;
 use App\Http\Requests\LoanRequest;
 use App\Models\Loan as ModelsLoan;
 use App\Models\LoanDetail;
@@ -18,6 +19,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Mockery;
+use Nette\Schema\Expect;
 use Tests\TestCase;
 
 class LoanServiceTest extends TestCase
@@ -210,5 +212,69 @@ class LoanServiceTest extends TestCase
         $this->loanRepo->shouldReceive('findLoanByID')->andReturn($loan);
         $this->expectException(Exception::class);
         $this->loanService->update($loanApprovalRequest);
+    }
+
+    public function testPaidRepaymentFailedNoFound()
+    {
+        $loanRequest = new LoanRepaymentRequest();
+        $loanRequest->setMethod('PATCH');
+        $loanRequest->request->add([
+            "amount" => 100,
+        ]);
+        $loanRequest->user_id = 3;
+        $loanModel = new ModelsLoan();
+        $loanModel->status = ModelsLoan::PAID;
+        $loanModel->user_id = 2;
+        $loanRequest->loan_id = 2;
+        $this->loanRepo->shouldReceive('findLoanByID')->andReturn($loanModel);
+        $this->expectException(Exception::class);
+        $this->loanService->repayment($loanRequest);
+    }
+
+    public function testPaidRepayment()
+    {
+        $loanRequest = new LoanRepaymentRequest();
+        $loanRequest->setMethod('PATCH');
+        $loanRequest->request->add([
+            "amount" => 100,
+        ]);
+        $loanRequest->user_id = 2;
+        $loanModel = new ModelsLoan();
+        $loanModel->status = ModelsLoan::PENDING;
+        $loanModel->user_id = 2;
+        $loanRequest->loan_id = 2;
+        $loanDetail = new LoanDetail();
+        $loanDetail->loan_id = 2;
+        $loanDetail->installment_amount = 100;
+        $loanDetail->paid_amount = 100;
+        $loanDetail->status = ModelsLoan::PENDING;
+        $this->loanRepo->shouldReceive('findLoanByID')->andReturn($loanModel);
+        $this->loanRepo->shouldReceive('findUnpaidDetailByLoanID')->andReturn($loanDetail);
+        $this->loanService->repayment($loanRequest);
+        $this->assertEquals($loanRequest->amount, $loanDetail->paid_amount);
+        $this->assertEquals($loanDetail->status, ModelsLoan::PAID);
+    }
+
+    public function testPaidRepaymentAllPaid()
+    {
+        $loanRequest = new LoanRepaymentRequest();
+        $loanRequest->setMethod('PATCH');
+        $loanRequest->request->add([
+            "amount" => 10,
+        ]);
+        $loanRequest->user_id = 2;
+        $loanModel = new ModelsLoan();
+        $loanModel->status = ModelsLoan::PENDING;
+        $loanModel->user_id = 2;
+        $loanRequest->loan_id = 2;
+        $loanDetail = new LoanDetail();
+        $loanDetail->loan_id = 2;
+        $loanDetail->installment_amount = 100;
+        $loanDetail->paid_amount = 100;
+        $loanDetail->status = ModelsLoan::PENDING;
+        $this->loanRepo->shouldReceive('findLoanByID')->andReturn($loanModel);
+        $this->loanRepo->shouldReceive('findUnpaidDetailByLoanID')->andReturn($loanDetail);
+        $this->expectException(Exception::class);
+        $this->loanService->repayment($loanRequest);
     }
 }
